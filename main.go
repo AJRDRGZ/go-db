@@ -1,7 +1,13 @@
 package main
 
-import "fmt"
+import "github.com/AJRDRGZ/go-db/storage"
 
 func main() {
-	fmt.Println("EDteam")
+	storage.NewPostgresDB()
+	storage.NewPostgresDB()
+	storage.NewPostgresDB()
+	storage.NewPostgresDB()
+	storage.NewPostgresDB()
+	storage.NewPostgresDB()
+	storage.NewPostgresDB()
 }
