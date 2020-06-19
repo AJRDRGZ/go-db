@@ -48,3 +48,17 @@ if err := serviceProduct.Create(m); err != nil {
 
 fmt.Printf("%+v\n", m)
 ```
+
+# Consultar Productos
+
+```go
+storageProduct := storage.NewPsqlProduct(storage.Pool())
+serviceProduct := product.NewService(storageProduct)
+
+ms, err := serviceProduct.GetAll()
+if err != nil {
+	log.Fatalf("product.GetAll: %v", err)
+}
+
+fmt.Println(ms)
+```
