@@ -31,7 +31,7 @@ if err := serviceInvoiceItem.Migrate(); err != nil {
 }
 ```
 
-# CREATE product
+# Crear un producto
 
 ```go
 storageProduct := storage.NewPsqlProduct(storage.Pool())
@@ -77,5 +77,22 @@ case err != nil:
 	log.Fatalf("product.GetByID: %v", err)
 default:
 	fmt.Println(m)
+}
+```
+
+# Actualizar un producto
+
+```go
+storageProduct := storage.NewPsqlProduct(storage.Pool())
+serviceProduct := product.NewService(storageProduct)
+
+m := &product.Model{
+	ID:    90,
+	Name:  "Curso testing",
+	Price: 150,
+}
+err := serviceProduct.Update(m)
+if err != nil {
+	log.Fatalf("product.Update: %v", err)
 }
 ```
