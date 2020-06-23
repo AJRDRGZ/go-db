@@ -3,18 +3,34 @@ package main
 import (
 	"log"
 
-	"github.com/AJRDRGZ/go-db/pkg/product"
+	"github.com/AJRDRGZ/go-db/pkg/invoice"
+	"github.com/AJRDRGZ/go-db/pkg/invoiceheader"
+	"github.com/AJRDRGZ/go-db/pkg/invoiceitem"
 	"github.com/AJRDRGZ/go-db/storage"
 )
 
 func main() {
 	storage.NewPostgresDB()
 
-	storageProduct := storage.NewPsqlProduct(storage.Pool())
-	serviceProduct := product.NewService(storageProduct)
+	storageHeader := storage.NewPsqlInvoiceHeader(storage.Pool())
+	storageItems := storage.NewPsqlInvoiceItem(storage.Pool())
+	storageInvoice := storage.NewPsqlInvoice(
+		storage.Pool(),
+		storageHeader,
+		storageItems,
+	)
 
-	err := serviceProduct.Delete(3)
-	if err != nil {
-		log.Fatalf("product.Delete: %v", err)
+	m := &invoice.Model{
+		Header: &invoiceheader.Model{
+			Client: "Alexys",
+		},
+		Items: invoiceitem.Models{
+			&invoiceitem.Model{ProductID: 4},
+		},
+	}
+
+	serviceInvoice := invoice.NewService(storageInvoice)
+	if err := serviceInvoice.Create(m); err != nil {
+		log.Fatalf("invoice.Create: %v", err)
 	}
 }
