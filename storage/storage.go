@@ -17,7 +17,26 @@ var (
 	once sync.Once
 )
 
-func NewPostgresDB() {
+// Driver of storage
+type Driver string
+
+// Drivers
+const (
+	MySQL    Driver = "MYSQL"
+	Postgres Driver = "POSTGRES"
+)
+
+// New create the connection with db
+func New(d Driver) {
+	switch d {
+	case MySQL:
+		newMySQLDB()
+	case Postgres:
+		newPostgresDB()
+	}
+}
+
+func newPostgresDB() {
 	once.Do(func() {
 		var err error
 		db, err = sql.Open("postgres", "postgres://edteam:edteam@localhost:7530/godb?sslmode=disable")
@@ -33,7 +52,7 @@ func NewPostgresDB() {
 	})
 }
 
-func NewMySQLDB() {
+func newMySQLDB() {
 	once.Do(func() {
 		var err error
 		db, err = sql.Open("mysql", "edteam:edteam@tcp(localhost:7531)/godb?parseTime=true")
@@ -95,4 +114,16 @@ func scanRowProduct(s scanner) (*product.Model, error) {
 	m.UpdatedAt = updatedAtNull.Time
 
 	return m, nil
+}
+
+// DAOProduct factory of product.Storage
+func DAOProduct(driver Driver) (product.Storage, error) {
+	switch driver {
+	case Postgres:
+		return newPsqlProduct(db), nil
+	case MySQL:
+		return newMySQLProduct(db), nil
+	default:
+		return nil, fmt.Errorf("Driver not implemented")
+	}
 }
