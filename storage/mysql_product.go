@@ -20,6 +20,7 @@ const (
 	mySQLGetAllProduct = `SELECT id, name, observations, price, 
 	created_at, updated_at
 	FROM products`
+	mySQLGetProductByID = mySQLGetAllProduct + " WHERE id = ?"
 )
 
 // MySQLProduct used for work with mySQL - product
@@ -106,4 +107,15 @@ func (p *MySQLProduct) GetAll() (product.Models, error) {
 	}
 
 	return ms, nil
+}
+
+// GetByID implement the interface product.Storage
+func (p *MySQLProduct) GetByID(id uint) (*product.Model, error) {
+	stmt, err := p.db.Prepare(mySQLGetProductByID)
+	if err != nil {
+		return &product.Model{}, err
+	}
+	defer stmt.Close()
+
+	return scanRowProduct(stmt.QueryRow(id))
 }
