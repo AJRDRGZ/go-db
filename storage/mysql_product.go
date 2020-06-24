@@ -17,6 +17,9 @@ const (
 		updated_at TIMESTAMP
 	)`
 	mySQLCreateProduct = `INSERT INTO products(name, observations, price, created_at) VALUES(?, ?, ?, ?)`
+	mySQLGetAllProduct = `SELECT id, name, observations, price, 
+	created_at, updated_at
+	FROM products`
 )
 
 // MySQLProduct used for work with mySQL - product
@@ -73,4 +76,34 @@ func (p *MySQLProduct) Create(m *product.Model) error {
 
 	fmt.Printf("se creo el producto correctamente con ID: %d\n", m.ID)
 	return nil
+}
+
+// GetAll implement the interface product.Storage
+func (p *MySQLProduct) GetAll() (product.Models, error) {
+	stmt, err := p.db.Prepare(mySQLGetAllProduct)
+	if err != nil {
+		return nil, err
+	}
+	defer stmt.Close()
+
+	rows, err := stmt.Query()
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	ms := make(product.Models, 0)
+	for rows.Next() {
+		m, err := scanRowProduct(rows)
+		if err != nil {
+			return nil, err
+		}
+		ms = append(ms, m)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return ms, nil
 }
