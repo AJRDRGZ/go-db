@@ -13,13 +13,9 @@ func main() {
 	storageProduct := storage.NewMySQLProduct(storage.Pool())
 	serviceProduct := product.NewService(storageProduct)
 
-	m := &product.Model{
-		ID:    1,
-		Name:  "Curso CSS",
-		Price: 200,
-	}
-	err := serviceProduct.Update(m)
+	err := serviceProduct.Delete(3)
 	if err != nil {
-		log.Fatalf("product.Update: %v", err)
+		log.Fatalf("product.Delete: %v", err)
 	}
+
 }
