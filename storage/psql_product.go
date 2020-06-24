@@ -7,10 +7,6 @@ import (
 	"github.com/AJRDRGZ/go-db/pkg/product"
 )
 
-type scanner interface {
-	Scan(dest ...interface{}) error
-}
-
 const (
 	psqlMigrateProduct = `CREATE TABLE IF NOT EXISTS products(
 		id SERIAL NOT NULL,
@@ -168,27 +164,4 @@ func (p *PsqlProduct) Delete(id uint) error {
 
 	fmt.Println("se eliminó el producto correctamente")
 	return nil
-}
-
-func scanRowProduct(s scanner) (*product.Model, error) {
-	m := &product.Model{}
-	observationNull := sql.NullString{}
-	updatedAtNull := sql.NullTime{}
-
-	err := s.Scan(
-		&m.ID,
-		&m.Name,
-		&observationNull,
-		&m.Price,
-		&m.CreatedAt,
-		&updatedAtNull,
-	)
-	if err != nil {
-		return &product.Model{}, err
-	}
-
-	m.Observations = observationNull.String
-	m.UpdatedAt = updatedAtNull.Time
-
-	return m, nil
 }

@@ -7,6 +7,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/AJRDRGZ/go-db/pkg/product"
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/lib/pq"
 )
@@ -67,4 +68,31 @@ func timeToNull(t time.Time) sql.NullTime {
 		null.Valid = true
 	}
 	return null
+}
+
+type scanner interface {
+	Scan(dest ...interface{}) error
+}
+
+func scanRowProduct(s scanner) (*product.Model, error) {
+	m := &product.Model{}
+	observationNull := sql.NullString{}
+	updatedAtNull := sql.NullTime{}
+
+	err := s.Scan(
+		&m.ID,
+		&m.Name,
+		&observationNull,
+		&m.Price,
+		&m.CreatedAt,
+		&updatedAtNull,
+	)
+	if err != nil {
+		return &product.Model{}, err
+	}
+
+	m.Observations = observationNull.String
+	m.UpdatedAt = updatedAtNull.Time
+
+	return m, nil
 }
