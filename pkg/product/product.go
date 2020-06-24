@@ -44,7 +44,7 @@ func (m Models) String() string {
 type Storage interface {
 	Migrate() error
 	Create(*Model) error
-	// Update(*Model) error
+	Update(*Model) error
 	GetAll() (Models, error)
 	GetByID(uint) (*Model, error)
 	// Delete(uint) error
@@ -81,15 +81,15 @@ func (s *Service) GetByID(id uint) (*Model, error) {
 	return s.storage.GetByID(id)
 }
 
-// // Update is used for update a product
-// func (s *Service) Update(m *Model) error {
-// 	if m.ID == 0 {
-// 		return ErrIDNotFound
-// 	}
-// 	m.UpdatedAt = time.Now()
+// Update is used for update a product
+func (s *Service) Update(m *Model) error {
+	if m.ID == 0 {
+		return ErrIDNotFound
+	}
+	m.UpdatedAt = time.Now()
 
-// 	return s.storage.Update(m)
-// }
+	return s.storage.Update(m)
+}
 
 // // Delete is used for delete a product
 // func (s *Service) Delete(id uint) error {
